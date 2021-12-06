@@ -2,19 +2,22 @@ import java.io.*;
 import java.net.Socket;
 
 public class ServerThread extends Thread {
-    private Socket socket;
+    public Socket socket;
+    private Distributor distributor;
 
-    public ServerThread(Socket socket) {
+    public DataInputStream inputStream;
+    public DataOutputStream outputStream;
+
+    public ServerThread(Socket socket, Distributor distributor) {
         this.socket = socket;
+        this.distributor = distributor;
     }
 
     @Override
     public void run() {
         try {
-            DataInputStream inputStream = new DataInputStream(this.socket.getInputStream());
-            DataOutputStream outputStream = new DataOutputStream(this.socket.getOutputStream());
-
-            int exitCode = 0;
+            inputStream = new DataInputStream(this.socket.getInputStream());
+            outputStream = new DataOutputStream(this.socket.getOutputStream());
 
             do {
                 System.out.println(this.socket.isClosed());
@@ -33,6 +36,9 @@ public class ServerThread extends Thread {
                         outputStream.writeByte(2);
                         outputStream.writeInt(pathLength);
                         outputStream.write(pathData);
+
+                        System.out.println("Writed");
+                        socket.close();
                     }
 
                     // Result indexing
@@ -46,8 +52,6 @@ public class ServerThread extends Thread {
                     }
                 }
             } while (!this.socket.isClosed());
-
-            this.socket.close();
         } catch (IOException ex) {
             System.out.println("Server exception: " + ex.getMessage());
             ex.printStackTrace();

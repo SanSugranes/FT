@@ -26,8 +26,6 @@ public class ClientView {
             outputStream.writeByte(0);
             outputStream.writeInt(pathDataLength);
             outputStream.write(pathData);
-
-            socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
